@@ -1,0 +1,47 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+url = "https://raw.githubusercontent.com/wcota/covid19br/master/cases-brazil-cities.csv"
+dados = pd.read_csv(url)
+
+cidade_mais_casos = dados.loc[dados['cases'].idxmax()]['city']
+
+estado_mais_casos = dados.groupby('state')['cases'].sum().idxmax()
+
+estado_menos_casos = dados.groupby('state')['cases'].sum().idxmin()
+
+cidade_menos_mortes = dados.loc[dados['deaths'].idxmin()]['city']
+
+estado_menos_mortes = dados.groupby('state')['deaths'].sum().idxmin()
+
+total_casos_cidade = dados.groupby('city')['cases'].sum().sort_values(ascending=False)
+
+total_mortes_cidade = dados.groupby('city')['deaths'].sum().sort_values(ascending=False)
+
+total_casos_estado = dados.groupby('state')['cases'].sum().sort_values(ascending=False)
+
+total_mortes_estado = dados.groupby('state')['deaths'].sum().sort_values(ascending=False)
+
+print(f"Cidade com mais casos de covid: {cidade_mais_casos}")
+print(f"Estado com mais casos de covid: {estado_mais_casos}")
+print(f"Estado com menos casos de covid: {estado_menos_casos}")
+print(f"Cidade com menos mortes por covid: {cidade_menos_mortes}")
+print(f"Estado com menos mortes por covid: {estado_menos_mortes}")
+print("Total de casos por cidade no Brasil:")
+print(total_casos_cidade)
+print("Total de mortes por cidade no Brasil:")
+print(total_mortes_cidade)
+print("Total de casos por estado no Brasil:")
+print(total_casos_estado)
+print("Total de mortes por estado no Brasil:")
+print(total_mortes_estado)
+
+top5_estados_mortes = total_mortes_estado.head(5)
+sns.barplot(x=top5_estados_mortes.index, y=top5_estados_mortes.values)
+plt.title('5 estados com mais mortes por COVID')
+plt.show()
+
+sns.histplot(data=dados, x='cases', bins=20)
+plt.title('Histograma dos casos de COVID')
+plt.show()
